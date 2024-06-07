@@ -6,7 +6,7 @@ import os
 BASE_PATH = Path('D:/ZHAW/ML2/ML2project')
 YOLOV5_PATH = BASE_PATH / 'yolov5'  # Assuming yolov5 repo is cloned at the same level as backend
 MODEL_PATH = BASE_PATH / 'backend/models/yolov5s_trained.pt'
-IMG_PATH = BASE_PATH / 'backend/test_images/6106.jpg'  # Update with the path to your test image
+IMG_PATH = BASE_PATH / 'backend/test_images/6100.jpg'  # Update with the path to your test image
 OUTPUT_DIR = BASE_PATH / 'backend/test_images/output'  # Directory to save the annotated image
 
 # Ensure output directory exists
