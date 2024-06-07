@@ -4,3 +4,6 @@ dataset256.zip
 
 # cloned project
 yolov5/
+
+# test images
+backend/test_images/.*
