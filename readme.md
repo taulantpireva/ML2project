@@ -48,7 +48,8 @@ Overall Performance: The graphs collectively show that the model improves with t
    The base model performs reasonably well, but detects many things that are unnecessary for our application. The fine tuned model is more focused and performs better when detecting food specifically.
 
    5.2 Running the application
-   Data sets are not provided. The application can be run locally or seen on streamlit: ml2project.streamlit.app.
+   Data sets are not provided but can be found here: https://www.kaggle.com/datasets/rkuo2000/uecfood256 and here:https://www.kaggle.com/datasets/kmader/food41.
+   The application can be run locally or seen on streamlit: ml2project.streamlit.app.
    Test images can be found in the "ml2_testimages" folder or any image with food from the internet can be used.
 
    if you still wanna run the app locally:

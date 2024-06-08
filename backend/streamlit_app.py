@@ -7,8 +7,7 @@ from pathlib import Path
 from nutritional_info import nutritional_info  # Ensure this is the correct import
 
 # Load models
-BASE_PATH = Path('.').resolve()
-MODEL_PATH = BASE_PATH / 'models' / 'yolov5s_trained.pt'
+MODEL_PATH = Path("backend/models/yolov5s_trained.pt")
 
 model = torch.hub.load('ultralytics/yolov5', 'custom', path=MODEL_PATH.resolve().as_posix(), force_reload=True)
 base_model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
