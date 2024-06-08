@@ -1,7 +1,4 @@
 # training data
-dataset256/
+dataset256/*
 dataset256.zip
 food-101/
-
-# test images
-backend/test_images/.*
