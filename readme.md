@@ -49,17 +49,14 @@ Overall Performance: The graphs collectively show that the model improves with t
 
    5.2 Running the application
    Data sets are not provided but can be found here: https://www.kaggle.com/datasets/rkuo2000/uecfood256 and here:https://www.kaggle.com/datasets/kmader/food41.
-   The application can be run locally or seen on streamlit: ml2project.streamlit.app.
-   Test images can be found in the "ml2_testimages" folder or any image with food from the internet can be used.
 
-   if you still wanna run the app locally:
+   run the app locally:
 
    - clone the repo: https://github.com/taulantpireva/ML2project
-   - change the path to the model in the streamlit_app.py, uncomment the base path and model path, comment the model_path
    - open a terminal and go to the root directory "ml2project", then cd backend
    - run pip install -r requirements.txt
-   - then run: streamlit run streamlit_app.py
-   - open http://localhost:8501/ in your browser
+   - then run: python app.py
+   - open localhost in your browser
 
      5.3 Hardware used
      To train the model I used a RTX 2070 Super which took around 4.5 hours for 50 epochs
