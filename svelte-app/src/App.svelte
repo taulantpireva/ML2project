@@ -1,11 +1,14 @@
 <script>
   import { onMount } from "svelte";
   let imageUrl = "";
+  let baseImageUrl = "";
   let detectedFoods = [];
   let nutritionalInfo = {};
+  let displayedNutritionalInfo = {};
   let uploadedImage = null;
   let fileName = "";
   let detectionFailed = false;
+  let servingSize = "normal";
 
   async function handleSubmit() {
     const formData = new FormData();
@@ -18,8 +21,10 @@
 
     const data = await response.json();
     imageUrl = `data:image/jpeg;base64,${data.image}`;
+    baseImageUrl = `data:image/jpeg;base64,${data.base_image}`;
     detectedFoods = JSON.parse(data.results);
     nutritionalInfo = data.nutritional_info;
+    updateDisplayedNutritionalInfo();
     uploadedImage = null; // Clear the uploaded file input
     fileName = ""; // Clear the file name
 
@@ -34,6 +39,25 @@
       handleSubmit();
     }
   }
+
+  function updateDisplayedNutritionalInfo() {
+    displayedNutritionalInfo = {};
+    for (let food in nutritionalInfo) {
+      let factor = 1;
+      if (servingSize === "small") {
+        factor = 0.8;
+      } else if (servingSize === "large") {
+        factor = 1.2;
+      }
+      displayedNutritionalInfo[food] = {
+        protein: (nutritionalInfo[food]?.protein || 0) * factor,
+        carbs: (nutritionalInfo[food]?.carbs || 0) * factor,
+        fat: (nutritionalInfo[food]?.fat || 0) * factor,
+      };
+    }
+  }
+
+  $: if (servingSize) updateDisplayedNutritionalInfo();
 </script>
 
 <div class="container mt-5">
@@ -57,22 +81,69 @@
 
   {#if detectedFoods.length > 0}
     <div class="mb-4">
-      <h2>Detected Foods</h2>
+      <div class="mb-3">
+        <h2>Serving Size</h2>
+        <label class="ml-2">
+          <input
+            type="radio"
+            name="serving-size"
+            value="small"
+            bind:group={servingSize}
+          />
+          Small
+        </label>
+        <label class="ml-2">
+          <input
+            type="radio"
+            name="serving-size"
+            value="normal"
+            bind:group={servingSize}
+          />
+          Normal
+        </label>
+        <label class="ml-2">
+          <input
+            type="radio"
+            name="serving-size"
+            value="large"
+            bind:group={servingSize}
+          />
+          Large
+        </label>
+      </div>
+      <h2>Detected Food(s)</h2>
       <ul class="list-group">
         {#each detectedFoods as food}
           <li class="list-group-item">
             <strong>{food.name.split("\t")[1]}</strong>
             <div>
-              Protein: {nutritionalInfo[food.name.split("\t")[1].trim()]
-                ?.protein || "N/A"}g
+              Protein: {displayedNutritionalInfo[
+                food.name.split("\t")[1].trim()
+              ]?.protein.toFixed(0) || "N/A"}g
             </div>
             <div>
-              Carbs: {nutritionalInfo[food.name.split("\t")[1].trim()]?.carbs ||
-                "N/A"}g
+              Carbs: {displayedNutritionalInfo[
+                food.name.split("\t")[1].trim()
+              ]?.carbs.toFixed(0) || "N/A"}g
             </div>
             <div>
-              Fat: {nutritionalInfo[food.name.split("\t")[1].trim()]?.fat ||
-                "N/A"}g
+              Fat: {displayedNutritionalInfo[
+                food.name.split("\t")[1].trim()
+              ]?.fat.toFixed(0) || "N/A"}g
+            </div>
+            <div>
+              Calories:
+              {(
+                (displayedNutritionalInfo[food.name.split("\t")[1].trim()]
+                  ?.protein || 0) *
+                  4 +
+                (displayedNutritionalInfo[food.name.split("\t")[1].trim()]
+                  ?.carbs || 0) *
+                  4 +
+                (displayedNutritionalInfo[food.name.split("\t")[1].trim()]
+                  ?.fat || 0) *
+                  9
+              ).toFixed(0)}
             </div>
           </li>
         {/each}
@@ -85,6 +156,18 @@
       <img
         src={imageUrl}
         alt="Detected Image"
+        class="img-fluid"
+        style="max-width: 400px; max-height: 400px;"
+      />
+    </div>
+  {/if}
+
+  {#if baseImageUrl}
+    <div class="text-center mt-4">
+      <h2>Base model yolov5s prediction</h2>
+      <img
+        src={baseImageUrl}
+        alt="Base Detected Image"
         class="img-fluid"
         style="max-width: 400px; max-height: 400px;"
       />
@@ -107,5 +190,9 @@
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+  }
+
+  .ml-2 {
+    margin-left: 0.5rem;
   }
 </style>

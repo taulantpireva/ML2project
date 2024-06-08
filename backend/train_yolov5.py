@@ -50,7 +50,7 @@ print("Starting the training process...")
 device = '0' if torch.cuda.is_available() else 'cpu'
 print(f'Using device: {device}')
 
-os.system(f'python train.py --img 640 --batch 16 --epochs 1 --data dataset.yaml --cfg yolov5s.yaml --weights yolov5s.pt --device {device} --name yolov5s_results')
+os.system(f'python train.py --img 640 --batch 16 --epochs 50 --data dataset.yaml --cfg yolov5s.yaml --weights yolov5s.pt --device {device} --name yolov5s_results')
 
 # Step 4: Save the Trained Model
 # Find the latest training run directory
