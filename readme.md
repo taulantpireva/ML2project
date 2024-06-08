@@ -48,13 +48,16 @@ Overall Performance: The graphs collectively show that the model improves with t
    The base model performs reasonably well, but detects many things that are unnecessary for our application. The fine tuned model is more focused and performs better when detecting food specifically.
 
    5.2 Running the application
-   Data sets are not provided. The application is dockerized and can be run locally by creating the docker container or using the existing image from dockerhub:pirevtau/ml2project:latest. If you want to run the application locally:
+   Data sets are not provided. The application can be run locally or seen on streamlit: ml2project.streamlit.app.
+   Test images can be found in the "ml2_testimages" folder or any image with food from the internet can be used.
 
-   - clone the repo
-   - open a terminal and go to the root directory "ml2project"
-   - run this command: docker build -t ml2project .
-   - then run this command: docker run -d -p 5000:5000 --name ml2project_container ml2project
-   - open http://localhost:5000/ in your browser
+   if you still wanna run the app locally:
 
-   5.3 Hardware used
-   To train the model I used a RTX 2070 Super which took around 4.5 hours for 50 epochs
+   - clone the repo: https://github.com/taulantpireva/ML2project
+   - open a terminal and go to the root directory "ml2project", then cd backend
+   - run pip install -r requirements.txt
+   - then run: streamlit run streamlit_app.py
+   - open http://localhost:8501/ in your browser
+
+     5.3 Hardware used
+     To train the model I used a RTX 2070 Super which took around 4.5 hours for 50 epochs
