@@ -3,8 +3,5 @@ dataset256/
 dataset256.zip
 food-101/
 
-# cloned project
-yolov5/
-
 # test images
 backend/test_images/.*

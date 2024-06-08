@@ -55,6 +55,7 @@ Overall Performance: The graphs collectively show that the model improves with t
    if you still wanna run the app locally:
 
    - clone the repo: https://github.com/taulantpireva/ML2project
+   - change the path to the model in the streamlit_app.py, uncomment the base path and model path, comment the model_path
    - open a terminal and go to the root directory "ml2project", then cd backend
    - run pip install -r requirements.txt
    - then run: streamlit run streamlit_app.py

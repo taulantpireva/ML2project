@@ -4,13 +4,69 @@ import numpy as np
 from PIL import Image
 import cv2
 from pathlib import Path
-from nutritional_info import nutritional_info  # Ensure this is the correct import
+
+# Ensure this import is correct
+from nutritional_info import nutritional_info
+
+# Set up logging
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# Ensure the YOLOv5 repository path is correct and add it to sys.path
+YOLOV5_PATH = Path("backend/yolov5")
+if not YOLOV5_PATH.exists():
+    logger.error(f"YOLOv5 path not found: {YOLOV5_PATH.resolve()}")
+    st.error(f"YOLOv5 path not found: {YOLOV5_PATH.resolve()}")
+else:
+    logger.debug(f"YOLOv5 path found: {YOLOV5_PATH.resolve()}")
+
+# Add the YOLOv5 path to PYTHONPATH
+import sys
+sys.path.append(str(YOLOV5_PATH))
+
+# Directly import the necessary modules from YOLOv5
+try:
+    from models.common import DetectMultiBackend
+    from utils.general import non_max_suppression, scale_coords
+    from utils.torch_utils import select_device
+    logger.debug("Imported YOLOv5 modules successfully")
+except ImportError as e:
+    logger.error(f"Error importing YOLOv5 modules: {e}")
+    st.error(f"Error importing YOLOv5 modules. Please check the logs for more details.")
+    st.stop()
 
 # Load models
-MODEL_PATH = Path("backend/models/yolov5s_trained.pt")
+BASE_PATH = Path('.').resolve()
+MODEL_PATH = BASE_PATH / 'backend' / 'models' / 'yolov5s_trained.pt'
 
-model = torch.hub.load('ultralytics/yolov5', 'custom', path=MODEL_PATH.resolve().as_posix(), force_reload=True)
-base_model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+# Select device (CPU or GPU)
+device = select_device('')
+
+# Load the custom model
+if MODEL_PATH.exists():
+    try:
+        model = DetectMultiBackend(MODEL_PATH.resolve().as_posix(), device=device)
+        logger.debug("Custom model loaded successfully")
+    except Exception as e:
+        logger.error(f"Error loading custom model: {e}")
+        st.error(f"Failed to load custom model. Please check the logs for more details.")
+        st.stop()
+else:
+    logger.error(f"Model file not found: {MODEL_PATH.resolve()}")
+    st.error(f"Model file not found: {MODEL_PATH.resolve()}")
+    st.stop()
+
+# Load the base model
+base_model_path = YOLOV5_PATH / 'yolov5s.pt'
+try:
+    base_model = DetectMultiBackend(base_model_path.resolve().as_posix(), device=device)
+    logger.debug("Base model loaded successfully")
+    st.success("Models loaded successfully")
+except Exception as e:
+    logger.error(f"Error loading base model: {e}")
+    st.error(f"Failed to load base model. Please check the logs for more details.")
+    st.stop()
 
 def clean_food_name(food_name):
     return food_name.split('\t')[-1].strip().lower()
@@ -28,6 +84,7 @@ if uploaded_file is not None:
 
     # Perform inference with fine-tuned model
     results = model(img)
+    results = non_max_suppression(results)
     results_json = results.pandas().xyxy[0].to_json(orient="records")
 
     # Get detected food items and their nutritional information
@@ -35,7 +92,7 @@ if uploaded_file is not None:
     cleaned_detected_foods = [clean_food_name(food) for food in detected_foods]
     st.markdown("### Fine Tuned Model Results")
     if not cleaned_detected_foods:
-        st.write("No food detected for fine tuned model")
+        st.write("No food detected for fine-tuned model")
     else:
         nutritional_data = {food: nutritional_info.get(food, {}) for food in cleaned_detected_foods}
 
@@ -71,6 +128,7 @@ if uploaded_file is not None:
 
     # Perform inference with base model
     base_results = base_model(img)
+    base_results = non_max_suppression(base_results)
     base_img_with_boxes = np.squeeze(base_results.render())
     base_img_with_boxes = cv2.cvtColor(base_img_with_boxes, cv2.COLOR_BGR2RGB)
 
